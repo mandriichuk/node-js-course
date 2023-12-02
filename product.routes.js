@@ -4,19 +4,28 @@ const { blockSpecialBrand } = require('./middleware');
 
 const router = express.Router();
 
-// handle get request for path /products
 router.get('/products', (request, response) => {
    return response.json(products);
 });
 
-// handle get request for path /products/:brand
 router.get('/products/:brand', blockSpecialBrand, (request, response) => {
-   const { brand } = request.params; // Access the brand parameter from the URL
+   const { brand } = request.params; 
 
-   // Filter products based on the brand parameter
    const filteredProducts = products.filter(product => product.brand === brand);
 
-   response.json(filteredProducts); // Send the filtered products as a JSON response
+   response.json(filteredProducts);
+});
+
+router.get('/products/:id', (request, response) => {
+   const { id } = request.params;
+
+   const product = products.find(product => product.id === parseInt(id));
+
+   if (product) {
+       response.json(product);
+   } else {
+       response.status(404).send('Product not found'); 
+   }
 });
 
 router.get('/productswitherror', (request, response) => {
@@ -24,6 +33,5 @@ router.get('/productswitherror', (request, response) => {
    err.statusCode = 400
    throw err
 });
-
 
 module.exports = router;
